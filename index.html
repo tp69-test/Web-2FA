@@ -31,16 +31,17 @@
         ::-webkit-scrollbar-track { background: #090b14; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
         
-        .toast-enter { animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .toast-leave { animation: slideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        /* HIỆU ỨNG THÔNG BÁO MỚI (Trôi từ trên xuống rồi mờ dần) */
+        .toast-enter { animation: toastEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .toast-leave { animation: toastLeave 0.8s ease-out forwards; } /* Chạy từ từ trong 0.8s */
         
-        @keyframes slideIn {
-            from { transform: translate(-50%, 150%); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
+        @keyframes toastEnter {
+            from { transform: translateY(-40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
-        @keyframes slideOut {
-            from { transform: translate(-50%, 0); opacity: 1; }
-            to { transform: translate(-50%, 150%); opacity: 0; }
+        @keyframes toastLeave {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(40px); opacity: 0; } /* Trôi xuống dưới và mờ đi */
         }
 
         .glass-panel {
@@ -113,7 +114,7 @@
             <div class="flex items-center justify-between mb-5 px-1">
                 <h2 class="text-lg md:text-xl font-bold text-white flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-slate-400"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
-                    Tài khoản đã lưu
+                    Key đã lưu
                 </h2>
                 <button onclick="openModal()" class="flex items-center gap-1.5 bg-white/10 hover:bg-white/15 active:bg-white/20 text-white px-3 py-2 rounded-lg font-medium transition-colors text-xs md:text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
@@ -172,8 +173,8 @@
         </div>
     </div>
 
-    <!-- TOAST CONTAINER -->
-    <div id="toastContainer" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden w-max max-w-[90vw]"></div>
+    <!-- TOAST CONTAINER (Đã dời lên trên cùng ở giữa) -->
+    <div id="toastContainer" class="fixed top-12 md:top-20 left-0 right-0 z-[100] flex flex-col items-center pointer-events-none px-4"></div>
 
     <!-- Script Core Logic -->
     <script>
@@ -189,12 +190,10 @@
             shieldAlert: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12 mb-4 opacity-50"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>`
         };
 
-        // --- CẢI TIẾN TRÌNH GIẢI MÃ BASE32 KHÔNG BỊ LỖI ---
         function base32ToBytes(base32) {
             const base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
             let bits = '';
             
-            // Xóa khoảng trắng, gạch ngang, dấu '=' và Tự sửa lỗi gõ nhầm (0 -> O, 1 -> I)
             const cleanBase32 = base32.replace(/[\s-=]/g, '').toUpperCase()
                                       .replace(/0/g, 'O')
                                       .replace(/1/g, 'I');
@@ -245,18 +244,16 @@
             }
         }
 
-        // --- Kiểm tra trình duyệt có hỗ trợ Web Crypto API không ---
         window.addEventListener('DOMContentLoaded', () => {
             if (!window.crypto || !window.crypto.subtle) {
                 setTimeout(() => {
-                    showToast("Lỗi: Trình duyệt hoặc Server không hỗ trợ bảo mật (Crypto API). Không thể tạo mã!", "error");
+                    showToast("Lỗi: Trình duyệt không hỗ trợ Web Crypto API!", "error");
                     document.getElementById('btnQuickGenerate').disabled = true;
                     document.getElementById('quickBtnText').innerText = "Không Khả Dụng";
                 }, 500);
             }
         });
 
-        // --- APP STATE ---
         let keys = JSON.parse(localStorage.getItem('2fa_auth_keys')) || [];
         let codes = {};
         let currentPeriod = Math.floor(Date.now() / 30000);
@@ -265,7 +262,6 @@
         
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
-            container.classList.remove('hidden');
             
             const toast = document.createElement('div');
             let colors = type === 'error' ? 'bg-red-500/20 border border-red-500/50 text-red-200' :
@@ -274,16 +270,19 @@
             
             let icon = type === 'error' ? SVG_ICONS.error : type === 'alert' ? SVG_ICONS.alert : SVG_ICONS.check;
 
-            toast.className = `flex items-center gap-2.5 px-5 py-3.5 rounded-2xl shadow-2xl font-medium text-[13px] md:text-sm glass-panel toast-enter ${colors}`;
+            // Đặt w-max, bo tròn góc to hơn
+            toast.className = `flex w-max max-w-full items-center gap-2.5 px-6 py-3.5 rounded-[20px] shadow-2xl font-medium text-[13px] md:text-sm glass-panel toast-enter ${colors}`;
             toast.innerHTML = `${icon} <span>${message}</span>`;
             
+            // Xóa thông báo cũ đi nếu bấm liên tục
             container.innerHTML = '';
             container.appendChild(toast);
 
+            // Thời gian hiển thị (hiện 1.5s -> bắt đầu mờ dần và trôi xuống 0.8s)
             setTimeout(() => {
                 toast.classList.replace('toast-enter', 'toast-leave');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+                setTimeout(() => toast.remove(), 800); // Đợi CSS trôi xong thì xoá HTML
+            }, 1500); 
         }
 
         function formatCode(code) {
@@ -312,7 +311,7 @@
             }
         }
 
-        // --- LOGIC LẤY MÃ NHANH ---
+        // --- LẤY MÃ NHANH ---
         const quickInput = document.getElementById('quickKeyInput');
         const btnGenerate = document.getElementById('btnQuickGenerate');
         const display = document.getElementById('quickCodeDisplay');
@@ -365,7 +364,7 @@
             }
         });
 
-        // --- LOGIC KÉT LƯU TRỮ ---
+        // --- KÉT LƯU TRỮ ---
         async function updateAllCodes() {
             for (let k of keys) {
                 codes[k.id] = await generateTOTP(k.secret);
