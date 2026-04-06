@@ -1,256 +1,69 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Web Authenticator</title>
-    
-    <!-- Script ẩn cảnh báo màu vàng của Tailwind trong Console -->
-    <script>
-        const originalWarn = console.warn;
-        console.warn = function(...args) {
-            if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
-            originalWarn.apply(console, args);
-        };
-    </script>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #090b14;
-            color: #e2e8f0;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .font-mono {
-            font-family: 'JetBrains Mono', Consolas, Monaco, 'Courier New', monospace;
-        }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #090b14; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-        
-        .toast-enter { animation: toastEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .toast-leave { animation: toastLeave 0.8s ease-out forwards; }
-        
-        @keyframes toastEnter {
-            from { transform: translateY(-40px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes toastLeave {
-            from { transform: translateY(0); opacity: 1; }
-            to { transform: translateY(40px); opacity: 0; }
-        }
-
-        .glass-panel {
-            background: rgba(15, 17, 26, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-        }
-        
-        input, select, textarea { font-size: 16px !important; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Web Authenticator</title>
+<script>const oW=console.warn;console.warn=function(...a){if(a[0]&&typeof a[0]==='string'&&a[0].includes('cdn.tailwindcss.com'))return;oW.apply(console,a);};</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background-color:#090b14;color:#e2e8f0;-webkit-tap-highlight-color:transparent}.font-mono{font-family:'JetBrains Mono',Consolas,Monaco,'Courier New',monospace}::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#090b14}::-webkit-scrollbar-thumb{background:#1e293b;border-radius:4px}.toast-enter{animation:tE .4s cubic-bezier(.16,1,.3,1) forwards}.toast-leave{animation:tL .8s ease-out forwards}@keyframes tE{from{transform:translateY(-40px);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes tL{from{transform:translateY(0);opacity:1}to{transform:translateY(40px);opacity:0}}.glass-panel{background:rgba(15,17,26,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}input,select,textarea{font-size:16px!important}</style>
 </head>
 <body class="min-h-screen selection:bg-blue-500/30 pb-20 relative">
+<header class="border-b border-white/5 bg-black/40 backdrop-blur-xl sticky top-0 z-40">
+<div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="bg-blue-500/10 p-2 rounded-xl text-blue-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg></div>
+<h1 class="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">WebAuthenticator</h1>
+</div>
+<div class="flex items-center gap-2 text-sm font-medium text-slate-400 bg-white/5 px-3 py-1.5 rounded-full border border-white/5 shadow-inner">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+<span id="gTmr" class="w-5 text-center font-mono">30s</span>
+</div>
+</div>
+</header>
+<main class="max-w-4xl mx-auto px-4 py-6 md:py-8 space-y-8">
+<section class="bg-gradient-to-br from-slate-900 to-slate-800/80 rounded-3xl p-[1px] shadow-2xl relative overflow-hidden">
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/20 rounded-full blur-[80px] pointer-events-none"></div>
+<div class="glass-panel rounded-[23px] p-5 md:p-8 relative z-10">
+<h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-400"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Lấy Mã Nhanh</h2>
+<div class="flex flex-col gap-3 md:flex-row md:gap-4">
+<div class="flex-1"><input type="text" id="qKI" placeholder="Nhập Secret Key (VD: JBSWY3DP...)" class="w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-3.5 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all font-mono placeholder:text-slate-600 placeholder:font-sans text-base" /></div>
+<button id="bQG" disabled class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3.5 rounded-xl font-medium transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap shadow-[0_4px_20px_rgba(37,99,235,0.3)] w-full md:w-auto"><span id="qBIC"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg></span><span id="qBT">Tạo Mã Ngay</span></button>
+</div>
+<div id="qCA" class="mt-5 flex flex-col items-center justify-center py-6 md:py-8 bg-black/30 border border-white/5 rounded-2xl relative group cursor-pointer hover:bg-black/50 transition-colors active:scale-[0.98]">
+<span class="text-[11px] md:text-sm text-slate-500 uppercase tracking-[0.2em] font-semibold mb-3">Mã Xác Thực Của Bạn</span>
+<div id="qCD" class="text-4xl sm:text-5xl md:text-7xl font-mono font-bold tracking-widest text-white transition-all">------</div>
+<div id="qCCH" class="absolute top-3 right-3 text-blue-400 flex items-center gap-2 opacity-0 transition-opacity hidden"><span class="hidden md:inline text-xs font-medium bg-blue-500/10 px-2 py-1 rounded-md border border-blue-500/20">Copy</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></div>
+</div>
+</div>
+</section>
+<section>
+<div class="flex items-center justify-between mb-5 px-1">
+<h2 class="text-lg md:text-xl font-bold text-white flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-slate-400"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>Key đã lưu</h2>
+<div class="flex items-center gap-2 shrink-0">
+<button onclick="tACV()" title="Ẩn/Hiện tất cả mã" class="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/15 active:bg-white/20 text-white rounded-lg transition-colors"><span id="gEIC"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span></button>
+<button onclick="oM()" title="Thêm Key Mới" class="w-10 h-10 flex items-center justify-center bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white rounded-lg transition-colors shadow-lg shadow-blue-500/20"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+</div>
+</div>
+<div id="sKC" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+</section>
+</main>
+<div id="aKM" class="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-black/70 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+<div class="bg-[#161a27] border border-white/10 rounded-t-3xl md:rounded-2xl w-full max-w-md shadow-2xl transform translate-y-full md:translate-y-0 md:scale-95 transition-all duration-300" id="mC">
+<div class="w-full flex justify-center pt-3 md:hidden"><div class="w-12 h-1.5 bg-white/20 rounded-full"></div></div>
+<div class="p-5 border-b border-white/5 flex justify-between items-center bg-white/[0.02] mt-2 md:mt-0"><h2 class="text-lg font-bold text-white flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-400"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Lưu Key Mới</h2></div>
+<form id="aKF" class="p-5 space-y-4">
+<div><label class="block text-sm font-medium text-slate-300 mb-1.5">Tên tài khoản / Dịch vụ</label><input type="text" id="fN" required placeholder="VD: Facebook, Google..." class="w-full bg-black/50 border border-white/10 text-white rounded-xl px-4 py-3.5 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-600" /></div>
+<div><label class="block text-sm font-medium text-slate-300 mb-1.5">Secret Key (Mã thiết lập)</label><input type="text" id="fS" required placeholder="Dán mã vào đây..." class="w-full bg-black/50 border border-white/10 text-white font-mono rounded-xl px-4 py-3.5 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-600" /></div>
+<div><label class="block text-sm font-medium text-slate-300 mb-1.5">Thời gian lưu trữ</label><select id="fD" class="w-full bg-black/50 border border-white/10 text-white rounded-xl px-4 py-3.5 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 appearance-none"><option value="infinite">Lưu vĩnh viễn trên máy này</option><option value="1h">Lưu 1 Giờ (Tự động xoá)</option><option value="24h">Lưu 1 Ngày (Tự động xoá)</option><option value="7d">Lưu 7 Ngày (Tự động xoá)</option></select></div>
+<div class="flex gap-3 pt-4 mt-6 border-t border-white/5 pb-4 md:pb-0"><button type="button" onclick="cM()" class="flex-1 bg-white/5 hover:bg-white/10 text-white px-4 py-3.5 rounded-xl font-medium transition-colors active:scale-95">Hủy bỏ</button><button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white px-4 py-3.5 rounded-xl font-medium transition-colors shadow-lg shadow-blue-500/20 active:scale-95">Lưu Key</button></div>
+</form>
+</div>
+</div>
+<div id="tC" class="fixed top-12 md:top-20 left-0 right-0 z-[100] flex flex-col items-center pointer-events-none px-4"></div>
+<script>const I={h:`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 animate-spin"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>`,k:`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>`,c:`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-400"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>`,a:`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-orange-400"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,e:`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-red-400"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,t:`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>`,cp:`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`,cl:`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,sa:`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12 mb-4 opacity-50"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>`,ey:`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,eo:`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>`};function b32(b){const c='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';let x='';const d=b.replace(/[\s-=]/g,'').toUpperCase().replace(/0/g,'O').replace(/1/g,'I');for(let i=0;i<d.length;i++){const v=c.indexOf(d.charAt(i));if(v===-1)throw new Error("E");x+=v.toString(2).padStart(5,'0')}const y=new Uint8Array(Math.floor(x.length/8));for(let i=0;i<y.length;i++){y[i]=parseInt(x.substring(i*8,i*8+8),2)}return y}async function gT(s){if(!s)return"------";try{const k=b32(s);const K=await crypto.subtle.importKey('raw',k,{name:'HMAC',hash:'SHA-1'},false,['sign']);const e=Math.floor(Date.now()/1000);let t=Math.floor(e/30);const T=new Uint8Array(8);for(let i=7;i>=0;i--){T[i]=t&0xff;t>>=8}const S=await crypto.subtle.sign('HMAC',K,T);const h=new Uint8Array(S);const o=h[h.length-1]&0xf;const c=(((h[o]&0x7f)<<24)|((h[o+1]&0xff)<<16)|((h[o+2]&0xff)<<8)|(h[o+3]&0xff))%1000000;return c.toString().padStart(6,'0')}catch(e){return"LỖI KEY"}}window.addEventListener('DOMContentLoaded',()=>{if(!window.crypto||!window.crypto.subtle){setTimeout(()=>{sT("Lỗi: Trình duyệt không hỗ trợ Web Crypto API!","error");document.getElementById('bQG').disabled=true;document.getElementById('qBT').innerText="Không Khả Dụng"},500)}});let _k=JSON.parse(localStorage.getItem('2fa_auth_keys'))||[],_c={},_cp=Math.floor(Date.now()/30000),_qk='',_qc='------',_rs=new Set(),_st={},_hc=new Set(JSON.parse(localStorage.getItem('2fa_hidden_codes')||'[]'));function sT(m,t='success'){const C=document.getElementById('tC');const T=document.createElement('div');let l=t==='error'?'bg-red-500/20 border border-red-500/50 text-red-200':t==='alert'?'bg-orange-500/20 border border-orange-500/50 text-orange-200':'bg-blue-500/20 border border-blue-500/50 text-blue-200';let i=t==='error'?I.e:t==='alert'?I.a:I.c;T.className=`flex w-max max-w-full items-center gap-2.5 px-6 py-3.5 rounded-[20px] shadow-2xl font-medium text-[13px] md:text-sm glass-panel toast-enter ${l}`;T.innerHTML=`${i} <span>${m}</span>`;C.innerHTML='';C.appendChild(T);setTimeout(()=>{T.classList.replace('toast-enter','toast-leave');setTimeout(()=>T.remove(),800)},1500)}function fC(c){if(!c||c.length!==6||c==="------"||c==="LỖI KEY")return c;return`${c.substring(0,3)} ${c.substring(3)}`}function cT(t,m){if(t==="------"||t==="LỖI KEY")return;if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>sT(m))}else{let A=document.createElement("textarea");A.value=t;A.style.position="fixed";document.body.appendChild(A);A.select();try{document.execCommand('copy');sT(m)}catch(e){sT("Trình duyệt chặn copy tự động!","error")}document.body.removeChild(A)}}function tSV(i,s,n,e){if(e)e.stopPropagation();if(_rs.has(i)){_rs.delete(i);if(_st[i]){clearTimeout(_st[i]);delete _st[i]}}else{_rs.add(i);cT(s,`Đã copy Secret Key của ${n}`);if(_st[i])clearTimeout(_st[i]);_st[i]=setTimeout(()=>{_rs.delete(i);delete _st[i];rSK()},2000)}rSK()}function tCV(i,e){if(e)e.stopPropagation();if(_hc.has(i))_hc.delete(i);else _hc.add(i);localStorage.setItem('2fa_hidden_codes',JSON.stringify([..._hc]));rSK()}function tACV(){if(_k.length===0)return;if(_hc.size===_k.length)_hc.clear();else _k.forEach(k=>_hc.add(k.id));localStorage.setItem('2fa_hidden_codes',JSON.stringify([..._hc]));rSK();sT(_hc.size===0?"Đã hiển thị tất cả mã":"Đã khóa bảo mật tất cả mã","success")}const qI=document.getElementById('qKI'),bG=document.getElementById('bQG'),dD=document.getElementById('qCD'),cH=document.getElementById('qCCH'),qA=document.getElementById('qCA'),iC=document.getElementById('qBIC');qI.addEventListener('input',(e)=>{_qk=e.target.value.trim();if(window.crypto&&window.crypto.subtle){bG.disabled=!_qk}dD.innerText="------";dD.className="text-4xl sm:text-5xl md:text-7xl font-mono font-bold tracking-widest text-white transition-all";cH.classList.add('hidden');cH.classList.remove('opacity-100')});bG.addEventListener('click',async()=>{if(!_qk)return;iC.innerHTML=I.h;document.getElementById('qBT').innerText="Đang tạo...";qI.blur();const c=await gT(_qk);_qc=c;setTimeout(()=>{iC.innerHTML=I.k;document.getElementById('qBT').innerText="Tạo Mã Ngay";if(c==="LỖI KEY"){dD.innerText="LỖI KEY";dD.className="text-3xl md:text-4xl font-mono font-bold tracking-widest text-red-500 transition-all";sT("Key bị sai định dạng Base32","error");cH.classList.add('hidden')}else{dD.innerText=fC(c);dD.className="text-4xl sm:text-5xl md:text-7xl font-mono font-bold tracking-widest text-white transition-all";sT("Tạo mã thành công!");cH.classList.remove('hidden');setTimeout(()=>cH.classList.add('opacity-100'),50)}},300)});qA.addEventListener('click',()=>{if(_qc!=="------"&&_qc!=="LỖI KEY"){cT(_qc,"Đã copy Mã Xác Thực Mới")}});async function uAC(){for(let k of _k){_c[k.id]=await gT(k.secret)}if(_qk&&_qc!=="------"&&_qc!=="LỖI KEY"){_qc=await gT(_qk);dD.innerText=fC(_qc)}rSK()}function dK(i){if(confirm("Bạn có chắc muốn xoá Key này?")){_k=_k.filter(k=>k.id!==i);localStorage.setItem('2fa_auth_keys',JSON.stringify(_k));_rs.delete(i);_hc.delete(i);localStorage.setItem('2fa_hidden_codes',JSON.stringify([..._hc]));if(_st[i]){clearTimeout(_st[i]);delete _st[i]}rSK();sT("Đã xoá Key thành công")}}function rSK(){const C=document.getElementById('sKC');const G=document.getElementById('gEIC');if(G){const a=_k.length>0&&_hc.size===_k.length;G.innerHTML=a?I.eo:I.ey}if(_k.length===0){C.innerHTML=`<div class="col-span-full flex flex-col items-center justify-center py-12 md:py-16 text-slate-500 border border-dashed border-white/10 rounded-2xl bg-white/5">${I.sa}<p class="text-base font-medium text-slate-300">Chưa có Key nào được lưu</p><p class="text-[13px] mt-1 text-center px-4">Lưu các key thường dùng để không phải nhập lại nhiều lần.</p></div>`;return}let H='';const N=Math.floor(Date.now()/1000);const L=30-(N%30);const D=L<=5;const S=D?'#ef4444':'#3b82f6';const R=window.innerWidth<768?14:16;const K=3;const Z=R-K*2;const U=Z*2*Math.PI;const O=U-(L/30)*U;_k.forEach(i=>{const h=_hc.has(i.id);const s=fC(_c[i.id])||"------";const p=h?"*** ***":s;const n=i.name.replace(/'/g,"\\'");const v=_rs.has(i.id);const P=i.secret.length>6?`${i.secret.substring(0,3)}...${i.secret.substring(i.secret.length-3)}`:'••••••';const d=v?i.secret:P;const j=v?"bg-blue-500/20 px-2 py-0.5 rounded border border-blue-500/50 text-blue-300 font-mono cursor-pointer hover:bg-blue-500/30 transition-all duration-300 break-all max-w-[200px] sm:max-w-[250px]":"bg-white/5 px-2 py-0.5 rounded border border-white/5 font-mono cursor-pointer hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-200 transition-all duration-300 break-all max-w-[200px] sm:max-w-[250px]";const A=h?"":`onclick="cT('${_c[i.id]}', 'Đã copy mã 6 số của ${n}')"`;const B=h?"flex items-center justify-between bg-black/40 border border-white/5 p-3 md:p-4 rounded-xl transition-all":"flex items-center justify-between bg-black/40 hover:bg-blue-500/10 border border-white/5 hover:border-blue-500/30 p-3 md:p-4 rounded-xl cursor-pointer transition-all active:scale-[0.98] group/code";const X=h?"text-slate-500 mt-0.5 block tracking-[0.1em]":(D?"text-red-400":"text-blue-400");let E='';if(i.expiry){const l=Math.max(1,Math.floor((i.expiry-Date.now())/(1000*60*60)));E=`<span class="text-orange-400/80 flex items-center gap-1 ml-2">${I.cl} Tự xoá sau ${l}h</span>`}H+=`<div class="bg-[#121520] border border-white/5 hover:border-blue-500/30 rounded-2xl p-4 md:p-5 transition-all group relative overflow-hidden flex flex-col justify-between h-full"><div class="flex justify-between items-start mb-4"><div><h3 class="text-base md:text-lg font-semibold text-slate-100">${i.name}</h3><div class="flex items-center text-[11px] md:text-xs font-medium text-slate-500 mt-1.5 flex-wrap gap-y-2"><span onclick="tSV('${i.id}', '${i.secret}', '${n}', event)" class="${j}">${d}</span>${E}</div></div><div class="flex items-center gap-1 shrink-0 bg-white/5 rounded-lg p-1"><button onclick="tCV('${i.id}', event)" class="text-slate-400 hover:text-blue-400 active:bg-blue-500/20 transition-colors p-1.5 hover:bg-blue-500/10 rounded-md">${h?I.eo:I.ey}</button><div class="w-[1px] h-4 bg-white/10 mx-0.5"></div><button onclick="dK('${i.id}')" class="text-slate-400 hover:text-red-400 active:bg-red-500/20 transition-colors p-1.5 hover:bg-red-500/10 rounded-md">${I.t}</button></div></div><div ${A} class="${B}"><div class="text-2xl md:text-3xl font-mono font-bold tracking-[0.15em] md:tracking-[0.2em] ${X}">${p}</div><div class="flex items-center gap-2 md:gap-3">${!h?`<div class="hidden md:block opacity-0 group-hover/code:opacity-100 transition-opacity text-blue-400">${I.cp}</div>`:''}<div class="relative flex items-center justify-center" style="width: ${R*2}px; height: ${R*2}px;"><svg height="${R*2}" width="${R*2}" class="transform -rotate-90 absolute"><circle stroke="rgba(255,255,255,0.05)" fill="transparent" stroke-width="${K}" r="${Z}" cx="${R}" cy="${R}"></circle><circle stroke="${S}" fill="transparent" stroke-width="${K}" stroke-dasharray="${U} ${U}" style="stroke-dashoffset: ${O}px; transition: stroke-dashoffset 1s linear;" stroke-linecap="round" r="${Z}" cx="${R}" cy="${R}"></circle></svg></div></div></div></div>`});C.innerHTML=H}setInterval(()=>{const m=Date.now();const s=Math.floor(m/1000);const p=Math.floor(s/30);const l=30-(s%30);document.getElementById('gTmr').innerText=`${l}s`;if(p!==_cp){_cp=p;uAC()}else{if(window.getSelection().toString().length===0){rSK()}}let x=false;_k=_k.filter(k=>{if(k.expiry&&k.expiry<m){x=true;return false}return true});if(x){localStorage.setItem('2fa_auth_keys',JSON.stringify(_k));uAC();sT("Có key đã tự động xoá do hết hạn!","alert")}},1000);const M=document.getElementById('aKM'),mC=document.getElementById('mC'),F=document.getElementById('aKF');function oM(){M.classList.remove('hidden');setTimeout(()=>{M.classList.remove('opacity-0');if(window.innerWidth>=768)mC.classList.remove('md:scale-95');else mC.classList.remove('translate-y-full')},10)}function cM(){M.classList.add('opacity-0');if(window.innerWidth>=768)mC.classList.add('md:scale-95');else mC.classList.add('translate-y-full');setTimeout(()=>{M.classList.add('hidden');F.reset()},300)}M.addEventListener('click',(e)=>{if(e.target===M)cM()});F.addEventListener('submit',(e)=>{e.preventDefault();const n=document.getElementById('fN').value.trim();const s=document.getElementById('fS').value.trim();const d=document.getElementById('fD').value;if(!n||!s)return;let x=null;const w=Date.now();if(d==='1h')x=w+3600000;else if(d==='24h')x=w+86400000;else if(d==='7d')x=w+604800000;const K={id:Math.random().toString(36).substring(2,15),name:n,secret:s,createdAt:w,expiry:x};_k.unshift(K);localStorage.setItem('2fa_auth_keys',JSON.stringify(_k));uAC();cM();sT("Đã lưu Key an toàn!")});uAC();window.addEventListener('resize',rSK);</script>
+</body>
+</html>
 
-    <header class="border-b border-white/5 bg-black/40 backdrop-blur-xl sticky top-0 z-40">
-        <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="bg-blue-500/10 p-2 rounded-xl text-blue-400">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
-                </div>
-                <h1 class="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">
-                    WebAuthenticator
-                </h1>
-            </div>
-            <div class="flex items-center gap-2 text-sm font-medium text-slate-400 bg-white/5 px-3 py-1.5 rounded-full border border-white/5 shadow-inner">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <span id="globalTimer" class="w-5 text-center font-mono">30s</span>
-            </div>
-        </div>
-    </header>
 
-    <main class="max-w-4xl mx-auto px-4 py-6 md:py-8 space-y-8">
-        <!-- KHU VỰC 1: LẤY MÃ NHANH -->
-        <section class="bg-gradient-to-br from-slate-900 to-slate-800/80 rounded-3xl p-[1px] shadow-2xl relative overflow-hidden">
-            <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/20 rounded-full blur-[80px] pointer-events-none"></div>
-            
-            <div class="glass-panel rounded-[23px] p-5 md:p-8 relative z-10">
-                <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-400"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                    Lấy Mã Nhanh
-                </h2>
-                
-                <div class="flex flex-col gap-3 md:flex-row md:gap-4">
-                    <div class="flex-1">
-                        <input type="text" id="quickKeyInput" placeholder="Nhập Secret Key (VD: JBSWY3DP...)" 
-                            class="w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-3.5 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all font-mono placeholder:text-slate-600 placeholder:font-sans text-base" />
-                    </div>
-                    <button id="btnQuickGenerate" disabled class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3.5 rounded-xl font-medium transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap shadow-[0_4px_20px_rgba(37,99,235,0.3)] w-full md:w-auto">
-                        <span id="quickBtnIconContainer">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
-                        </span>
-                        <span id="quickBtnText">Tạo Mã Ngay</span>
-                    </button>
-                </div>
-
-                <div id="quickCodeArea" class="mt-5 flex flex-col items-center justify-center py-6 md:py-8 bg-black/30 border border-white/5 rounded-2xl relative group cursor-pointer hover:bg-black/50 transition-colors active:scale-[0.98]">
-                    <span class="text-[11px] md:text-sm text-slate-500 uppercase tracking-[0.2em] font-semibold mb-3">Mã Xác Thực Của Bạn</span>
-                    <div id="quickCodeDisplay" class="text-4xl sm:text-5xl md:text-7xl font-mono font-bold tracking-widest text-white transition-all">
-                        ------
-                    </div>
-                    <div id="quickCodeCopyHint" class="absolute top-3 right-3 text-blue-400 flex items-center gap-2 opacity-0 transition-opacity hidden">
-                        <span class="hidden md:inline text-xs font-medium bg-blue-500/10 px-2 py-1 rounded-md border border-blue-500/20">Copy</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- KHU VỰC 2: KÉT LƯU TRỮ KEY -->
-        <section>
-            <div class="flex items-center justify-between mb-5 px-1">
-                <h2 class="text-lg md:text-xl font-bold text-white flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-slate-400"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
-                    Key đã lưu
-                </h2>
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleAllCodesVisibility()" class="flex items-center gap-1.5 bg-white/10 hover:bg-white/15 active:bg-white/20 text-white px-3 py-2 rounded-lg font-medium transition-colors text-xs md:text-sm">
-                        <span id="globalEyeIconContainer"></span>
-                        <span class="hidden sm:inline" id="globalEyeText">Ẩn tất cả</span>
-                    </button>
-                    <button onclick="openModal()" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium transition-colors text-xs md:text-sm shadow-lg shadow-blue-500/20">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                        <span class="hidden sm:inline">Thêm Mới</span>
-                    </button>
-                </div>
-            </div>
-
-            <div id="savedKeysContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        </section>
-    </main>
-
-    <!-- MODAL THÊM KEY -->
-    <div id="addKeyModal" class="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-black/70 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-[#161a27] border border-white/10 rounded-t-3xl md:rounded-2xl w-full max-w-md shadow-2xl transform translate-y-full md:translate-y-0 md:scale-95 transition-all duration-300" id="modalContent">
-            <div class="w-full flex justify-center pt-3 md:hidden">
-                <div class="w-12 h-1.5 bg-white/20 rounded-full"></div>
-            </div>
-
-            <div class="p-5 border-b border-white/5 flex justify-between items-center bg-white/[0.02] mt-2 md:mt-0">
-                <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-400"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                    Lưu Key Mới
-                </h2>
-            </div>
-            
-            <form id="addKeyForm" class="p-5 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1.5">Tên tài khoản / Dịch vụ</label>
-                    <input type="text" id="formName" required placeholder="VD: Facebook, Google..." class="w-full bg-black/50 border border-white/10 text-white rounded-xl px-4 py-3.5 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-600" />
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1.5">Secret Key (Mã thiết lập)</label>
-                    <input type="text" id="formSecret" required placeholder="Dán mã vào đây..." class="w-full bg-black/50 border border-white/10 text-white font-mono rounded-xl px-4 py-3.5 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-600" />
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1.5">Thời gian lưu trữ</label>
-                    <select id="formDuration" class="w-full bg-black/50 border border-white/10 text-white rounded-xl px-4 py-3.5 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 appearance-none">
-                        <option value="infinite">Lưu vĩnh viễn trên máy này</option>
-                        <option value="1h">Lưu 1 Giờ (Tự động xoá)</option>
-                        <option value="24h">Lưu 1 Ngày (Tự động xoá)</option>
-                        <option value="7d">Lưu 7 Ngày (Tự động xoá)</option>
-                    </select>
-                </div>
-
-                <div class="flex gap-3 pt-4 mt-6 border-t border-white/5 pb-4 md:pb-0">
-                    <button type="button" onclick="closeModal()" class="flex-1 bg-white/5 hover:bg-white/10 text-white px-4 py-3.5 rounded-xl font-medium transition-colors active:scale-95">
-                        Hủy bỏ
-                    </button>
-                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white px-4 py-3.5 rounded-xl font-medium transition-colors shadow-lg shadow-blue-500/20 active:scale-95">
-                        Lưu Key
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- TOAST CONTAINER -->
-    <div id="toastContainer" class="fixed top-12 md:top-20 left-0 right-0 z-[100] flex flex-col items-center pointer-events-none px-4"></div>
-
-    <!-- Script Core Logic -->
-    <script>
-        const SVG_ICONS = {
-            hourglass: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 animate-spin"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>`,
-            key: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>`,
-            check: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-400"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>`,
-            alert: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-orange-400"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
-            error: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-red-400"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
-            trash: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>`,
-            copy: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`,
-            clock: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
-            shieldAlert: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12 mb-4 opacity-50"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>`,
-            eye: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
-            eyeOff: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>`
-        };
-
-        function base32ToBytes(base32) {
-            const base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-            let bits = '';
-            const cleanBase32 = base32.replace(/[\s-=]/g, '').toUpperCase().replace(/0/g, 'O').replace(/1/g, 'I');
-            for (let i = 0; i < cleanBase32.length; i++) {
-                const val = base32chars.indexOf(cleanBase32.charAt(i));
-                if (val === -1) throw new Error("Ký tự không hợp lệ");
-                bits += val.toString(2).padStart(5, '0');
-            }
-            const bytes = new Uint8Array(Math.floor(bits.length / 8));
-            for (let i = 0; i < bytes.length; i++) { bytes[i] = parseInt(bits.substring(i * 8, i * 8 + 8), 2); }
-            return bytes;
-        }
-
-        async function generateTOTP(secret) {
-            if (!secret) return "------";
-            try {
-                const keyBytes = base32ToBytes(secret);
-                const key = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']);
-                const epoch = Math.floor(Date.now() / 1000);
-                let time = Math.floor(epoch / 30);
-                const timeBytes = new Uint8Array(8);
-                for (let i = 7; i >= 0; i--) { timeBytes[i] = time & 0xff; time >>= 8; }
-                const signature = await crypto.subtle.sign('HMAC', key, timeBytes);
-                const hmac = new Uint8Array(signature);
-                const offset = hmac[hmac.length - 1] & 0xf;
-                const code = (((hmac[offset] & 0x7f) << 24) | ((hmac[offset + 1] & 0xff) << 16) | ((hmac[offset + 2] & 0xff) << 8) | (hmac[offset + 3] & 0xff)) % 1000000;
-                return code.toString().padStart(6, '0');
-            } catch (e) { return "LỖI KEY"; }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            if (!window.crypto || !window.crypto.subtle) {
-                setTimeout(() => {
-                    showToast("Lỗi: Trình duyệt không hỗ trợ Web Crypto API!", "error");
-                    document.getElementById('btnQuickGenerate').disabled = true;
-                    document.getElementById('quickBtnText').innerText = "Không Khả Dụng";
-                }, 500);
-            }
-        });
-
-        let keys = JSON.parse(localStorage.getItem('2fa_auth_keys')) || [];
-        let codes = {};
-        let currentPeriod = Math.floor(Date.now() / 30000);
-        let currentQuickKey = '';
-        let currentQuickCode = '------';
-        
-        // --- TRẠNG THÁI BẢO MẬT ---
-        let revealedSecrets = new Set();
-        let secretTimeouts = {}; // Lưu trữ thời gian tự động đóng
-        // Đọc trạng thái ẩn mã 6 số từ LocalStorage để duy trì sau khi tải lại trang
-        let hiddenCodes = new Set(JSON.parse(localStorage.getItem('2fa_hidden_codes')) || []);
-        
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            let colors = type === 'error
